@@ -2,8 +2,9 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import joblib
+import pickle
 
-df = pd.read_csv('airbnb_prices.csv')
+df = pd.read_csv('airbnb_prices.csv', index_col=False)
 st.title('Airbnb Data Explorer')
 st.write('Welcome to the Airbnb Data Explorer. This app allows you to explore Airbnb data from major cities around the world.')
 st.write('Raw Data')
@@ -17,32 +18,50 @@ room_typeTuple = tuple(df['room_type'].unique())
 col1, col2, col3 = st.columns(3)
 
 with col1:
+    st.markdown('**:round_pushpin: Location**')
     neighbourhood = st.selectbox('Neighbourhood', neighbourhoodTuple)
     neighbourhood_group = st.selectbox('Neighbourhood Group', neighbourhood_groupTuple)
+    latitude = st.number_input('Latitude', min_value=-90.0, max_value=90.0, step=0.0001)
+    longitude = st.number_input('Longitude', min_value=-180.0, max_value=180.0, step=0.0001)
 with col2:
-    reviews = st.number_input('Reviews', min_value=0, max_value=1000, step=1)
-    noise = st.number_input('Noise (db)', min_value=0, max_value=100, step=1)
-with col3:
+    st.markdown('**:information_source: Additional Information**')
+    noise = st.number_input('Noise (db)', min_value=0.0, max_value=100.0, step=0.01)
     room_type = st.selectbox('Room Type', room_typeTuple)
-    minimum_nights = st.number_input('Minimum Nights', min_value=0, max_value=365, step=1)
-floor = st.number_input('Floors', min_value=0, max_value=10, step=1)    
+    minimum_nights = st.number_input('Minimum Nights', min_value=0, max_value=365, step=1)    
+    floor = st.number_input('Floors', min_value=0, max_value=10, step=1)    
+with col3:
+    st.markdown('**:star2: Reviews**')
+    number_of_reviews = st.number_input('Reviews', min_value=0, max_value=1000, step=1)
+    reviews_per_month = st.number_input('Reviews per Month', min_value=0.0, max_value=60.0, step=0.1)
+    last_review_time = st.date_input('Last Review Time')
+    last_review_year = last_review_time.year
+    last_review_month = last_review_time.month
+    last_review_day = last_review_time.day
+    reviews_per_day = reviews_per_month / 30
+
+
+    
     
 input_features = pd.DataFrame({
-    'neighbourhood': [neighbourhood],
-    'neighbourhood_group': [neighbourhood_group],
-    'room_type': [room_type],
-    'number_of_reviews': [reviews],
-    'noise': [noise],
+    'latitude': [latitude],
+    'longitude': [longitude],
     'minimum_nights': [minimum_nights],
-    'floor': [floor]
+    'number_of_reviews': [number_of_reviews],
+    'reviews_per_month': [reviews_per_month],
+    'floor': [floor],
+    'noise(dB)': [noise],
+    'last_review_year': [last_review_year],
+    'last_review_month': [last_review_month],
+    'last_review_day': [last_review_day],
+    'neighbourhood_group': [neighbourhood_group],
+    'neighbourhood': [neighbourhood],
+    'room_type': [room_type],
+    'reviews_per_day' : [reviews_per_day]
 })
-
-st.write('Input Features')
-st.write(input_features)
 
 # Add placeholder columns for the output
 output_columns = [
-    'noise' , 'floor', 'minimum_nights', 'number_of_reviews'
+    'minimum_nights', 'number_of_reviews', 'reviews_per_month', 'floor', 'noise(dB)', 'last_review_year', 'last_review_month', 'last_review_day'
 ]
 
 # Adding categorical variables
@@ -96,6 +115,9 @@ room_types = [
     'Private room', 'Shared room'
 ]
 
+extras = ['price_per_room', 'reviews_per_day', 'location_cluster_1', 'location_cluster_2', 'location_cluster_3', 'location_cluster_4', 'location_cluster_5', 'location_cluster_6', 'location_cluster_7', 'location_cluster_8', 'location_cluster_9']
+
+
 # Create dummy variables
 input_features = pd.get_dummies(input_features, columns=['neighbourhood_group', 'neighbourhood', 'room_type'])
 
@@ -114,16 +136,27 @@ input_features = input_features[output_columns + [f'neighbourhood_group_{col}' f
                 [f'neighbourhood_{col}' for col in neighbourhoods] +
                 [f'room_type_{col}' for col in room_types]]
 
-st.write('Processed Input Features')
-st.write(input_features)
+
+input_features['price_per_room'] = 180
+for column in extras:
+    if 'location_cluster' in column:
+        input_features[column] = False
+
+# Set one of the location_cluster columns to True, for example 'location_cluster_3'
+input_features['location_cluster_3'] = True
 
 model = joblib.load('best_model.pkl')
+scaler = joblib.load('scaler.pkl')
+
+
 
 def predict(features):
     features = np.array(features).reshape(1, -1)
     prediction = model.predict(features)
     return prediction[0]
 
+
+# Make prediction
 if st.button('Predict Price'):
     price = predict(input_features)
     st.write(f'Predicted Price: ₹{price:,.2f}')
