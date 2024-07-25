@@ -70,12 +70,12 @@ def predict(features):
     features = np.array(features).reshape(1, -1)
     features_scaled = scaler.transform(features)
     prediction = model.predict(features_scaled)
-    return prediction[0] * 100
+    return prediction[0]
 
 st.write('Input Data for Prediction')
 st.write(input_features)
 
 if st.button('Predict Price'):
     
-    prediction = predict(input_features)
+    prediction = predict(input_features) * 100
     st.success(f'The predicted price is ${prediction:.2f}')
