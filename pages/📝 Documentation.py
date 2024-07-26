@@ -14,7 +14,7 @@ scaler = joblib.load('scaler.pkl')
 # Streamlit App
 st.title('Airbnb Price Prediction Model Documentation')
 st.header("Declaration of originality")
-st.image('https://imgur.com/bd2aa140-cad4-4b59-8cae-65c0920d4431')
+st.image('https://i.imgur.com/cvujwBK.png')
 st.header('Introduction')
 st.write("""
 This project’s aim is to make use of what has been learned in class by doing these hands-on projects to further apply the knowledge to create a prediction web application using a raw dataset sourced online. 
