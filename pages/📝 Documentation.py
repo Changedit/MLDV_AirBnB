@@ -191,6 +191,3 @@ This documentation walks you through the process of building a price prediction 
 - Experiment with other machine learning algorithms to see if better performance can be achieved.
 - Continuously update the model with new data to maintain and improve its accuracy over time.
 """)
-
-st.header('References')
-st.write("Any references or sources used in the project should be listed here.")
