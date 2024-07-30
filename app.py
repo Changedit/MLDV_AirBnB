@@ -66,31 +66,17 @@ input_features = pd.DataFrame({
 model = joblib.load('best_model.pkl')
 scaler = joblib.load('scaler.pkl')
 
-def predict(features):
-    features = np.array(features).reshape(1, -1)
-    features_scaled = scaler.transform(features)
-    prediction = model.predict(features_scaled)
-    return prediction[0]
+# def predict(features):
+#     features = np.array(features).reshape(1, -1)
+#     features_scaled = scaler.transform(features)
+#     prediction = model.predict(features_scaled)
+#     return prediction[0]
 
 st.write('Input Data for Prediction')
 st.write(input_features)
 
-input_features = pd.DataFrame({
-    'neighbourhood_group': [neighbourhood_group / 100],
-    'neighbourhood': [neighbourhood / 1000],
-    'room_type': [room_type],
-    'minimum_nights': [minimum_nights],
-    'number_of_reviews': [number_of_reviews * 100],
-    'reviews_per_month': [reviews_per_month],
-    'floor': [floor],
-    'noise(dB)': [noise / 100],
-    'last_review_year': [last_review_year / 10000],
-    'last_review_month': [last_review_month / 100],
-    'last_review_day': [last_review_day / 100],
-    'reviews_per_day': [reviews_per_day * 30]
-})
-
 if st.button('Predict Price'):
     
-    prediction = predict(input_features)
+    # prediction = predict(input_features)
+    prediction = model.predict(input_features)
     st.success(f'The predicted price is ${prediction:.2f}')
