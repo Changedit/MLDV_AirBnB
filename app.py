@@ -76,8 +76,8 @@ st.write('Input Data for Prediction')
 st.write(input_features)
 
 input_features = pd.DataFrame({
-    'neighbourhood_group': [neighbourhood_group],
-    'neighbourhood': [neighbourhood],
+    'neighbourhood_group': [neighbourhood_group / 10],
+    'neighbourhood': [neighbourhood / 100],
     'room_type': [room_type],
     'minimum_nights': [minimum_nights],
     'number_of_reviews': [number_of_reviews / 10],
@@ -87,7 +87,7 @@ input_features = pd.DataFrame({
     'last_review_year': [last_review_year / 1000],
     'last_review_month': [last_review_month / 10],
     'last_review_day': [last_review_day / 10],
-    'reviews_per_day': [reviews_per_day]
+    'reviews_per_day': [reviews_per_day * 10]
 })
 
 if st.button('Predict Price'):
