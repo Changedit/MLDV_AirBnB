@@ -78,5 +78,5 @@ st.write(input_features)
 if st.button('Predict Price'):
     
     # prediction = predict(input_features)
-    prediction = model.predict(input_features)
+    prediction = model.predict(input_features)[0]
     st.success(f'The predicted price is ${prediction:.2f}')
