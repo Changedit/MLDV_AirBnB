@@ -66,11 +66,11 @@ input_features = pd.DataFrame({
 model = joblib.load('best_model.pkl')
 scaler = joblib.load('scaler.pkl')
 
-# def predict(features):
-#     features = np.array(features).reshape(1, -1)
-#     features_scaled = scaler.transform(features)
-#     prediction = model.predict(features_scaled)
-#     return prediction[0]
+def predict(features):
+    features = np.array(features).reshape(1, -1)
+    features_scaled = scaler.transform(features)
+    prediction = model.predict(features_scaled)
+    return prediction[0]
 
 st.write('Input Data for Prediction')
 st.write(input_features)
@@ -78,5 +78,5 @@ st.write(input_features)
 if st.button('Predict Price'):
     
     # prediction = predict(input_features)
-    prediction = model.predict(input_features)[0] * 30.7
+    prediction = predict(input_features) * 30.7
     st.success(f'The predicted price is ${prediction:.2f}')
